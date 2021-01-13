@@ -6,17 +6,16 @@
 
 <h1><div align="center">IniFiles</h1>
 <p align="center">
-  <img src="https://img.shields.io/badge/PRICE-free-%231DC8EE"/>
-  <img src="https://img.shields.io/badge/SUPPORT-yes-%231DC8EE"/>
+  <img src="https://img.shields.io/badge/PRICE-free-yellow"/>
+  <img src="https://img.shields.io/badge/SUPPORT-yes-yellow"/>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/downloads/AstiiCoder/inifiles/total?color=%231DC8EE&label=DOWNLOADS&logo=GitHub&logoColor=%231DC8EE&style=flat"/>
-  <img src="https://img.shields.io/github/last-commit/AstiiCoder/inifiles?color=%231DC8EE&label=LAST%20COMMIT&style=flat"/>
-  <img src="https://img.shields.io/github/release-date/AstiiCoder/inifiles?color=%231DC8EE&label=RELEASE%20DATE&style=flat"/>
+  <img src="https://img.shields.io/github/downloads/Lako-FC/IniFile/total?color=yellow&label=DOWNLOADS&logo=GitHub&logoColor=yellow&style=flat"/>
+  <img src="https://img.shields.io/github/last-commit/Lako-FC/IniFile?color=yellow&label=LAST%20COMMIT&style=flat"/>
+  <img src="https://img.shields.io/github/release-date/Lako-FC/IniFile?color=yellow&label=RELEASE%20DATE&style=flat"/>
 </p>
 
-<p align="center">
   Этот класс предназначен для работы с <b>INI-файлами</b>. То есть с текстовыми файлами, имеющими определённую структуру.<br>
   Основное отличие от подобных классов: простота использования, синтаксический минимализм, наличие раздельной и пакетной записи нескольких значений,<br>
   исходный код с комментариями, который легко изменить под свои нужды и конкретную реализацию, совместимость с .Net Framework и .Net Core,<br>
@@ -24,7 +23,7 @@
   Как правило, примениение INI-файлов распространено для чтения и хранения параметров приложения.<br>
   Одно из наиболее популярных решений - сохранение позиции и величины окна (формы) и других значений при закрытии приложения,<br>
   а при последующем запуске приложения - загрузка этих параметров из INI-файла и их применение.<br> 
-</p>
+
 
 ## Зависимости
 
@@ -58,7 +57,7 @@
 - **WriteFloat** сохранить вещественное число типа (float).
 - **Write** сокращённая форма сохранения строкового значения, но при необходимости, можно использовать для любого типа, конвертируемого в строку.
 
-- ### Проверки и удаления (не поддерживается в режиме WaitAndNotSave)
+- ### Проверки и удаления (не поддерживается в режиме Пакетного сохранения)
 - **KeyExists** проверка, существует ли ключ в заданной секции
 - **SectionExists** проверка, существует ли данная секция
 - **EraseSection** удаление секции
@@ -109,11 +108,11 @@ TextBox_Content.Text += "\n" + Convert.ToString(ini.ReadDate("Section7", "var_da
 TextBox_Content.Text += "\n" + ini.ReadDateAsString("Section7", "var_date", DateTime.Now); // загрузка даты как строки в сокращённом формате
 TextBox_Content.Text += "\n" + Convert.ToString(ini.ReadDateTime("Section7", "var_date_time", DateTime.Now)); //загрузка даты и времени
 ```
-результат:
-True
-12.01.2021 0:00:00
-12.01.2021
-12.01.2021 13:31:19
+результат на экране:<br>
+True<br>
+12.01.2021 0:00:00<br>
+12.01.2021<br>
+12.01.2021 13:31:19<br>
 
 4. Сохранение значений разных типов в файл в текущей директории:
 ```csharp
@@ -125,13 +124,13 @@ ini.WriteDate("Section7", "var_date", DateTime.Now);
 ini.WriteDateTime("Section7", "var_date_time", DateTime.Now);
 ```
 
-результат в файле:
-[Section7]
-var_date_time=12.01.2021 13:31:19
-var_date=12.01.2021
-var_bool=True
-var_int=700
-var_str=Ohne Dich
+результат в файле `config.ini`:
+[Section7]<br>
+var_date_time=12.01.2021 13:31:19<br>
+var_date=12.01.2021<br>
+var_bool=True<br>
+var_int=700<br>
+var_str=Ohne Dich<br>
 
 5. Сохранение нескольких значений сразу (пакетная запись):<br>
 В этом режиме от строчки WaitAndNotSave до строчки Save не происходит мгновенное сохранение в файл. Непосредственно сохранение происходит командой Save.
