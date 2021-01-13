@@ -25,7 +25,7 @@
   а при последующем запуске приложения - загрузка этих параметров из INI-файла и их применение.<br> 
 
 
-## Зависимости
+## 🔧 Зависимости
 
 - System
 - System.Collections.Generic
@@ -124,7 +124,7 @@ ini.WriteDate("Section7", "var_date", DateTime.Now);
 ini.WriteDateTime("Section7", "var_date_time", DateTime.Now);
 ```
 
-результат в файле `config.ini`:
+результат в файле `config.ini`:<br>
 [Section7]<br>
 var_date_time=12.01.2021 13:31:19<br>
 var_date=12.01.2021<br>
