@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/downloads/Lako-FC/IniFile/total?color=yellow&label=DOWNLOADS&logo=GitHub&logoColor=yellow&style=flat"/>
-  <img src="https://img.shields.io/github/last-commit/Lako-FC/IniFile?color=yellow&label=LAST%20COMMIT&style=flat"/>
-  <img src="https://img.shields.io/github/release-date/Lako-FC/IniFile?color=yellow&label=RELEASE%20DATE&style=flat"/>
+  <img src="https://img.shields.io/github/downloads/AstiiCoder/inifiles/total?color=yellow&label=DOWNLOADS&logo=GitHub&logoColor=yellow&style=flat"/>
+  <img src="https://img.shields.io/github/last-commit/AstiiCoder/inifiles?color=yellow&label=LAST%20COMMIT&style=flat"/>
+  <img src="https://img.shields.io/github/release-date/AstiiCoder/inifiles?color=yellow&label=RELEASE%20DATE&style=flat"/>
 </p>
 
   Этот класс предназначен для работы с <b>INI-файлами</b>. То есть с текстовыми файлами, имеющими определённую структуру.<br>
