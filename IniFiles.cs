@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using System.Windows;
+
 
 /// <summary>
 /// Класс, для работы с ini-файлами. Для использования, нужно скопировать и подключить в проект
@@ -25,6 +25,7 @@ internal class IniFiles
     private string _FileName;
     private List<string> _FileContent;
     private static bool _IsWaiting = false;
+    private Encoding _Coding = Encoding.Unicode;
     public List<string> _FileAllContent;
     private bool _SectionExists = false;
     private const string CommonSection = "Common";
@@ -43,14 +44,26 @@ internal class IniFiles
     /// </summary>
     /// <param name="FileName"></param>
     /// <returns>Требуется создать экземплят класса для чтения из файла или сохранения в файл.</returns>
-    public IniFiles(string FileName)
+    public IniFiles(string FileName) : this(FileName, Encoding.Unicode)
+    {
+        
+    }
+    /// <summary>
+    /// Если имя файла не указать, то файл создастся в директории программы с именем "config.ini".
+    /// ВНИМАНИЕ: если чтение происходит в разных местах программы, необходимо создавать новые экземпляры объекта, поскольку повторное чтение идёт только из памяти (не из файла)
+    /// </summary>
+    /// <param name="FileName"></param>
+    /// <param name="Coding"></param>
+    /// <returns>Требуется создать экземплят класса для чтения из файла или сохранения в файл.</returns>
+    public IniFiles(string FileName, Encoding Coding)
     {
         _FileName = FileName;
+        _Coding = Coding;
         if (System.IO.File.Exists(FileName) == false)
         {
             try
             {
-                StreamWriter sw = new StreamWriter(FileName, true, Encoding.Unicode);
+                StreamWriter sw = new StreamWriter(FileName, true, Coding);
                 sw.Close();
                 _CreateFile = true;
             }
@@ -81,7 +94,7 @@ internal class IniFiles
 
     private void LoadAllFileContent()
     {
-        using (StreamReader sr = new StreamReader(_FileName, System.Text.Encoding.Unicode))
+        using (StreamReader sr = new StreamReader(_FileName, _Coding))
         {
             string line;
             while ((line = sr.ReadLine()) != null)
@@ -256,6 +269,14 @@ internal class IniFiles
             return Default;
     }
 
+    public MemoryStream ReadBinaryStream(string Section, string Key, MemoryStream Value)
+    {
+        string StringFromFile = ReadString(Section, Key);
+        byte[] byteArray = _Coding.GetBytes(StringFromFile);
+        MemoryStream stream = new MemoryStream(byteArray);
+        return stream;
+    }
+
     #endregion ReadByTypes
 
     #region WriteByTypes
@@ -302,7 +323,7 @@ internal class IniFiles
         if ((!_SectionExists) && (!_IsWaiting))
         {
             string s = Environment.NewLine + Environment.NewLine + '[' + Section + ']' + Environment.NewLine + Key + '=' + Value;
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(_FileName, true, Encoding.Unicode);
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(_FileName, true, _Coding);
             writer.WriteLine(s);
             writer.Close();
             _FileAllContent.Add(s);
@@ -358,7 +379,7 @@ internal class IniFiles
     /// </summary>
     public void Save()
     {
-        using (StreamWriter sr = new StreamWriter(_FileName, false, Encoding.Unicode))
+        using (StreamWriter sr = new StreamWriter(_FileName, false, _Coding))
         {
             foreach (string item in _FileAllContent)
             {
@@ -410,6 +431,16 @@ internal class IniFiles
     public void WriteFloat(string Section, string Key, float Value)
     {
         WriteString(Section, Key, Convert.ToString(Value));
+    }
+
+    public void WriteBinaryStream(string Section, string Key, MemoryStream Value)
+    {
+        string StringFromStream = "";
+        using (var sr = new StreamReader(Value))
+        {
+            StringFromStream = sr.ReadToEnd();
+        }
+        WriteString(Section, Key, Convert.ToString(StringFromStream));
     }
 
     #endregion WriteByTypes
