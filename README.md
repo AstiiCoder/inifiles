@@ -12,7 +12,6 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/downloads/AstiiCoder/inifiles/total?color=yellow&label=DOWNLOADS&logo=GitHub&logoColor=yellow&style=flat"/>
   <img src="https://img.shields.io/github/last-commit/AstiiCoder/inifiles?color=yellow&label=LAST%20COMMIT&style=flat"/>
   <img src="https://img.shields.io/github/release-date/AstiiCoder/inifiles?color=yellow&label=RELEASE%20DATE&style=flat"/>
 </p>
