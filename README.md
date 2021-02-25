@@ -1,6 +1,7 @@
 # INIFiles
+
 Класс для работы с ini-файлами в C# <br>
-(по типу реализации подобного механизма в Delphi)
+Изначально создавался по типу реализации подобного механизма в Delphi, но в последствии стал наиудобнейшим механизмом для каждого проекта.
 <p align="center"> 
   <img align="center" src="https://github.com/AstiiCoder/inifiles/blob/main/IniFileIcon.png?raw=true" width="256"/> 
 </p>
@@ -17,9 +18,21 @@
   <img src="https://img.shields.io/github/release-date/AstiiCoder/inifiles?color=yellow&label=RELEASE%20DATE&style=flat"/>
 </p>
 
+This class is designed to work with <b> INI files </b>. That is, with text files that have a specific structure. <br>
+<b> Files must be in Unicode encoding. </b> If the INI file was created in a different encoding, then you can either translate, for example, in `Notepad ++` into encoding (UTF-8)
+either initialize the class with the required encoding (see example below), or use a file that will automatically create this class.
+  
+The main difference from similar classes: ease of use, syntactic minimalism, the presence of separate and batch writing of several values,
+source code with comments, which can be easily modified according to your needs and specific implementation, compatibility with .NET Standard, .Net Framework and .Net Core,
+ no use of additional libraries and other external code, the ability to work with files in different encoding. <br>
+
+Generally, using INI files is common for reading and storing application settings. <br>
+One of the most popular solutions is to save the position and size of the window (form) and other values ​​when the application is closed,
+and the next time the application is launched, these parameters are loaded from the INI file and applied. <br>
+
   Этот класс предназначен для работы с <b>INI-файлами</b>. То есть с текстовыми файлами, имеющими определённую структуру.<br>
   <b>Файлы должны быть в кодировке Unicode.</b> Если INI-файл был создан в другой кодировке, то можно либо перевести, например в `Notepad++` в кодировку (UTF-8)
-  либо инициализировать класс с указанием нужной кодировки (см. пример ниже).
+  либо инициализировать класс с указанием нужной кодировки (см. пример ниже), либо использовать файл, который автоматически создаст этот класс.
   
   Основное отличие от подобных классов: простота использования, синтаксический минимализм, наличие раздельной и пакетной записи нескольких значений,
   исходный код с комментариями, который легко изменить под свои нужды и конкретную реализацию, совместимость с .NET Standard, .Net Framework и .Net Core,
@@ -36,6 +49,9 @@
 - System.Collections.Generic
 - System.Linq
 - System.Text
+- System.Diagnostics
+- System.Text.RegularExpressions
+- System.Reflection
 
 ## ✅ Основные возможности
 
@@ -51,7 +67,9 @@
 - **ReadDateTime** загрузить дату и время.
 - **ReadFloat** загрузить вещественное число типа (float).
 - **ReadStream** загрузить поток байтов (хранится в виде строки, необходимо преобразовать поток в нужный объект).
+- **ReadRect** загрузить параметры прямоугольника (Rect). Можно сразу получить координаты и размеры окна.
 - **Read** сокращённая форма чтения значения; возвращает значение того типа, который удалось определить по значению в файле. 
+- **ReadFromIni** загрузка нескольких переменных (в том числе и разного типа) одной командой. Самый быстрый способ загрузки значений.
 
 - ### Запись в файл
 - **WriteString** cохранить строковое значение.
@@ -62,7 +80,9 @@
 - **WriteDateTime** сохранить значение типа (DateTime), то есть дата и время.
 - **WriteFloat** сохранить вещественное число типа (float).
 - **WriteStream** сохранить поток байтов.
+- **WriteRect** сохранить прямоугольник (Rect). Позволяет сразу сохранить координаты и размеры окна.
 - **Write** сокращённая форма сохранения строкового значения, но при необходимости, можно использовать для любого типа, конвертируемого в строку.
+- **WriteToIni** сохранение нескольких переменных (в том числе и разного типа) одной командой. Самый быстрый способ сохранения значений.
 
 - ### Проверки и удаления (не поддерживается в режиме Пакетного сохранения)
 - **KeyExists** проверка, существует ли ключ в заданной секции
@@ -87,6 +107,7 @@
 3. Удаление по ключу и секций целиком
 4. Сохранение по ключу
 5. Сохранение нескольких значениий за раз
+6. Сохранение и чтение нескольких значений переменных одной строкой кода
 
 - ### Примеры использования
 
@@ -195,4 +216,53 @@ ini.WriteBinaryStream("Section5", "BS", stream);
 IniFiles ini = new IniFiles();
 int X = ini.Read("X");
 bool B = ini.Read("IsIamBest");
+```
+
+12. Сохранение координат и размеров окна при его закрытии:<br>
+```csharp
+private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            IniFiles ini = new IniFiles();
+            ini.WriteRect("Main", "WindowPosition", RestoreBounds);
+        }
+```
+
+13. Восстановление координат и размеров окна при его инициализации:<br>
+```csharp
+private void Window_Initialized(object sender, EventArgs e)
+        {
+            IniFiles ini = new IniFiles();
+            Rect bounds = ini.ReadRect("Main", "WindowPosition");
+            if (bounds == Rect.Parse("0,0,0,0")) return;
+            Top = bounds.Top;
+            Left = bounds.Left;
+            // восстановить размеры окна, но не в полноэкранном режиме. Если полностью, то this.Location = ... this.WindowState = ...
+            if (SizeToContent == SizeToContent.Manual)
+            {
+                Width = bounds.Width;
+                Height = bounds.Height;
+            }
+        }
+```
+
+14. Чтение нескольких переменных одной командой:<br>
+Переменные могут быть разных типов. Чтение происходит исходя из имён переменных. Самый минимум написания кода!
+```csharp
+   public int X = 1;
+   public float k = 3.5f;
+            ...
+			string j = "Hello";
+            IniFilesExt ini = new IniFilesExt();
+            ini.ReadFromIni(X, j, k);
+```
+
+15. Сохранение нескольких переменных одной строчкой кода:<br>
+Переменные могут быть разных типов. Без создания экземпляра класса. Сохранение происходит исходя из имён переменных. Предельный минимум написания кода!
+```csharp
+   public int X = 1;
+   public float k = 3.5f;
+            ...
+			string j = "Hello";
+			...
+	IniFilesExt.WriteToIni(X, k, j);
 ```

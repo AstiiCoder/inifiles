@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using System.Reflection;
 
 /// <summary>
 /// Класс, для работы с ini-файлами. Для использования, нужно скопировать и подключить в проект
@@ -14,7 +16,7 @@ using System.IO;
 internal class IniFiles
 {
     // Класс для работы с ini-файлами
-    
+
     // Примеры использования:
     // IniFiles ini = new IniFiles(); // файл в директории программы будет создан, если его нет
     // ini.WriteString("Section7", "var_str", "One Dich22"); // запись строки в секцию по ключу
@@ -46,7 +48,7 @@ internal class IniFiles
     /// <returns>Требуется создать экземплят класса для чтения из файла или сохранения в файл.</returns>
     public IniFiles(string FileName) : this(FileName, Encoding.Unicode)
     {
-        
+
     }
     /// <summary>
     /// Если имя файла не указать, то файл создастся в директории программы с именем "config.ini".
@@ -141,7 +143,7 @@ internal class IniFiles
         {
             item = _FileContent[i];
             // Ищем секции
-            if ((item.Substring(0, 1) == "[") && (item.Substring(item.Length-1, 1) == "]")) SectionContent.Add(_FileContent[i]);
+            if ((item.Substring(0, 1) == "[") && (item.Substring(item.Length - 1, 1) == "]")) SectionContent.Add(_FileContent[i]);
         }
         return SectionContent;
     }
@@ -275,6 +277,19 @@ internal class IniFiles
         byte[] byteArray = _Coding.GetBytes(StringFromFile);
         MemoryStream stream = new MemoryStream(byteArray);
         return stream;
+    }
+
+    public System.Windows.Rect ReadRect(string Section, string Key)
+    {
+        string IntStr = ReadString(Section, Key);
+        try
+        {
+            return System.Windows.Rect.Parse(IntStr);
+        }
+        catch
+        {
+            return System.Windows.Rect.Parse("0,0,0,0"); 
+        }
     }
 
     #endregion ReadByTypes
@@ -443,6 +458,11 @@ internal class IniFiles
         WriteString(Section, Key, Convert.ToString(StringFromStream));
     }
 
+    public void WriteRect(string Section, string Key, System.Windows.Rect Value)
+    {
+        WriteString(Section, Key, Convert.ToString(Value));
+    }
+
     #endregion WriteByTypes
 
     public bool SectionExists(string Section)
@@ -539,3 +559,98 @@ internal class IniFiles
 
 }
 
+public class IniFilesExt
+{
+    /// <summary>
+    /// Сохранение нескольких значений переменных (в том числе разного типа) в файл (с именем по умолчанию) одной строкой, без создания экземпляра класса
+    /// Пример: int i = 1; string j = "hello"; bool X = false;
+    ///         IniFilesExt.WriteToIni(i, j, X);
+    /// </summary>
+    /// <param name="parameters">Набор переменных через запятую</param>
+    public static void WriteToIni(params object[] parameters)
+    {
+        // Обращаемся к первому фрейму текущего стека вызовов.
+        StackFrame frame = new StackTrace(true).GetFrame(1);
+        // Именно в этой строке в оригинальном файле есть имена переменных
+        string LineOfCode = File.ReadAllLines(frame.GetFileName())[frame.GetFileLineNumber() - 1].Trim();
+        // Непосредственно, получаем массив имён переменных
+        string[] VarNames = Regex.Match(LineOfCode, @"\((.+?)\)").Groups[1].Value.Split(',').Select(x => x.Trim()).ToArray();
+        // Сохранение всех переменных в файл по именам и соответствующим значениям.
+        IniFiles ini = new IniFiles();
+        ini.WaitAndNotSave();
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            ini.Write(VarNames[i], parameters[i].ToString());
+        }
+        ini.Save();
+    }
+
+    /// <summary>
+    /// Получение нескольких значений переменных (в том числе разного типа) из файла (с именем по умолчанию) одной строкой
+    /// Можно использовать этот метод без создания экземпляра класса, если скопировать его в нужные cs-файлики.
+    /// Пример: int i; string j; bool X;
+    ///         ReadFromIni(i, j, X);
+    /// </summary>
+    /// <param name="parameters">Набор переменных через запятую</param>
+    public void ReadFromIni(params object[] parameters)
+    {
+        string v = "";
+        // Обращаемся к первому фрейму текущего стека вызовов.
+        StackFrame frame = new StackTrace(true).GetFrame(1);
+        // Именно в этой строке в оригинальном файле есть имена переменных
+        string LineOfCode = File.ReadAllLines(frame.GetFileName())[frame.GetFileLineNumber() - 1].Trim();
+        // Непосредственно, получаем массив имён переменных
+        string[] VarNames = Regex.Match(LineOfCode, @"\((.+?)\)").Groups[1].Value.Split(',').Select(x => x.Trim()).ToArray();
+        // Заполним список значениями из ini-файла.
+        List<string> VarValues = new List<string>();
+        IniFiles ini = new IniFiles();
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            // Присвоение значений переменной.
+            v = VarNames[i];
+            VarValues.Add(ini.ReadString("Common", VarNames[i].Trim('"'), ""));
+
+            FieldInfo field_info =
+                //this.GetType().GetField(v,
+                GetType().GetField(v,
+                    BindingFlags.Instance |
+                    BindingFlags.NonPublic |
+                    BindingFlags.Public);
+
+            if (field_info == null)
+            {
+                // Нет значения
+            }
+            else
+            {
+                switch (parameters[i].GetType().ToString())
+                {
+                    case "System.String":
+                        field_info.SetValue(this, VarValues[i]);
+                        break;
+                    case "System.Int32":
+                        field_info.SetValue(this, Convert.ToInt32(VarValues[i]));
+                        break;
+                    case "System.Single":
+                        field_info.SetValue(this, Convert.ToSingle(VarValues[i]));
+                        break;
+                    case "System.Boolean":
+                        field_info.SetValue(this, Convert.ToBoolean(VarValues[i]));
+                        break;
+                    case "System.DateTime":
+                        field_info.SetValue(this, Convert.ToDateTime(VarValues[i]));
+                        break;
+                    case "System.Long":
+                        field_info.SetValue(this, Convert.ToInt64(VarValues[i]));
+                        break;
+                    default:
+                        field_info.SetValue(this, VarValues[i]);
+                        break;
+                }
+
+            }
+
+        }
+    }
+
+}
