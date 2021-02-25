@@ -19,7 +19,7 @@
 </p>
 
 This class is designed to work with <b>INI files</b>. That is, with text files that have a specific structure. <br>
-<b> Files must be in Unicode encoding. </b> If the INI file was created in a different encoding, then you can either translate, for example, in `Notepad ++` into encoding (UTF-8)
+<b> Files must be in Unicode encoding. </b>If the INI file was created in a different encoding, then you can either translate, for example, in `Notepad ++` into encoding (UTF-8)
 either initialize the class with the required encoding (see example below), or use a file that will automatically create this class.
   
 The main difference from similar classes: ease of use, syntactic minimalism, the presence of separate and batch writing of several values,
