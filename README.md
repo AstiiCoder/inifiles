@@ -18,7 +18,7 @@
   <img src="https://img.shields.io/github/release-date/AstiiCoder/inifiles?color=yellow&label=RELEASE%20DATE&style=flat"/>
 </p>
 
-This class is designed to work with <b> INI files </b>. That is, with text files that have a specific structure. <br>
+This class is designed to work with <b>INI files</b>. That is, with text files that have a specific structure. <br>
 <b> Files must be in Unicode encoding. </b> If the INI file was created in a different encoding, then you can either translate, for example, in `Notepad ++` into encoding (UTF-8)
 either initialize the class with the required encoding (see example below), or use a file that will automatically create this class.
   

@@ -647,7 +647,6 @@ public class IniFilesExt
                         field_info.SetValue(this, VarValues[i]);
                         break;
                 }
-
             }
 
         }
