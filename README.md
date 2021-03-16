@@ -1,6 +1,6 @@
 # INIFiles
 
-Класс для работы с ini-файлами в C# <br>
+Класс для работы с ini-файлами в C#<br>
 Изначально создавался по типу реализации подобного механизма в Delphi, но в последствии стал наиудобнейшим механизмом для каждого проекта.
 <p align="center"> 
   <img align="center" src="https://github.com/AstiiCoder/inifiles/blob/main/IniFileIcon.png?raw=true" width="256"/> 
