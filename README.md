@@ -1,6 +1,6 @@
 # INIFiles
 
-Класс для работы с ini-файлами в C#<br>
+Класс для работы с ini-файлами в C# <br>
 Изначально создавался по типу реализации подобного механизма в Delphi, но в последствии стал наиудобнейшим механизмом для каждого проекта.
 <p align="center"> 
   <img align="center" src="https://github.com/AstiiCoder/inifiles/blob/main/IniFileIcon.png?raw=true" width="256"/> 
@@ -13,7 +13,6 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/downloads/AstiiCoder/inifiles/total?color=yellow&label=DOWNLOADS&logo=GitHub&logoColor=yellow&style=flat"/>
   <img src="https://img.shields.io/github/last-commit/AstiiCoder/inifiles?color=yellow&label=LAST%20COMMIT&style=flat"/>
   <img src="https://img.shields.io/github/release-date/AstiiCoder/inifiles?color=yellow&label=RELEASE%20DATE&style=flat"/>
 </p>
